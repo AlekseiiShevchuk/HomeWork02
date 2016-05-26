@@ -26,12 +26,19 @@ class lift
         $this->liftManagement();
     }
 
+    private function stdOut($string){
+
+        return fwrite(STDOUT,$string);
+    }
+
     private function showState() {
-        echo '< < < The lift is on the ' . $this->floor . ' floor and contains ' . $this->people . ' people > > >'. PHP_EOL . PHP_EOL;
+        $string = '< < < The lift is on the ' . $this->floor . ' floor and contains ' . $this->people . ' people > > >'. PHP_EOL . PHP_EOL;
+        $this->stdOut($string);
     }
 
     private function askHowManyPeopleGoOut(){
-        echo 'How many people are going out from the lift now?:'. PHP_EOL;
+        $string = 'How many people are going out from the lift now?:'. PHP_EOL;
+        $this->stdOut($string);
         $goOutPeople = intval(fgets(STDIN));
         return $goOutPeople;
     }
@@ -41,7 +48,8 @@ class lift
         $goOutPeople = $this->askHowManyPeopleGoOut();
 
         if ($goOutPeople > $this->people){
-            echo 'ERROR: You can not get out more people then the lift contains!'. PHP_EOL;
+            $string = 'ERROR: You can not get out more people then the lift contains!'. PHP_EOL;
+            $this->stdOut($string);
             $this->checkHowManyPeopleGoOut();
         }else{
             $this->people -= $goOutPeople;
@@ -49,17 +57,10 @@ class lift
     }
 
     private function askHowManyPeopleGoIn(){
-        echo 'There are ' . $this->people . ' people in the lift now' . PHP_EOL . PHP_EOL;
-        echo 'How many people are going into the lift now?' . PHP_EOL;
+        $string = 'There are ' . $this->people . ' people in the lift now' . PHP_EOL . PHP_EOL . 'How many people are going into the lift now? (MAX amount 4 people)' . PHP_EOL;
+        $this->stdOut($string);
         $goInPeople = intval(fgets(STDIN));
         return $goInPeople;
-    }
-
-
-    private function askWhatFloor(){
-        echo 'Enter on what floor you want to go:' . PHP_EOL;
-        $whatFloor = intval(fgets(STDIN));
-        return $whatFloor;
     }
 
 
@@ -67,9 +68,13 @@ class lift
 
         $currentPeople = $this->askHowManyPeopleGoIn() + $this->people;
 
-        if ($currentPeople > 4 || $currentPeople < 0){
+        if ($currentPeople > self::MAX_PEOPLE || $currentPeople < self::MIN_PEOPLE){
 
-            echo 'The number of people in the lift MUST be from ' . self::MIN_PEOPLE . ' to ' . self::MAX_PEOPLE .'!'. PHP_EOL;
+            $string = 'Lift blocked!' . PHP_EOL .  'The number of people in the lift MUST be from ' . self::MIN_PEOPLE . ' to ' . self::MAX_PEOPLE .'!'. PHP_EOL .
+            'Free lift completely and press ENTER';
+            $this->stdOut($string);
+            $waitForEnter = intval(fgets(STDIN));
+            $this->people = 0;
             $this->checkHowManyPeopleInLiftNow();
         }else{
             $this->people = $currentPeople;
@@ -77,13 +82,22 @@ class lift
 
     }
 
+    private function askWhatFloor(){
+        $string = 'Enter on what floor you want to go:' . PHP_EOL;
+        $this->stdOut($string);
+        $whatFloor = intval(fgets(STDIN));
+        return $whatFloor;
+    }
+
+
     private function checkFloor() {
 
         $whatFloor = $this->askWhatFloor();
 
         if ($whatFloor < self::MIN_FLOOR || $whatFloor > self::MAX_FLOOR){
 
-            echo 'Enter floor number from ' . self::MIN_FLOOR . ' to ' . self::MAX_FLOOR .'!'. PHP_EOL;
+            $string = 'Enter floor number from ' . self::MIN_FLOOR . ' to ' . self::MAX_FLOOR .'!'. PHP_EOL;
+            $this->stdOut($string);
             $this->checkFloor();
         }else{
             $this->floor = $whatFloor;
