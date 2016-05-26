@@ -74,6 +74,7 @@ class lift
             'Free lift completely and press ENTER';
             $this->stdOut($string);
             $waitForEnter = intval(fgets(STDIN));
+            unset($waitForEnter);
             $this->people = 0;
             $this->checkHowManyPeopleInLiftNow();
         }else{
