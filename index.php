@@ -2,6 +2,6 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use lift\lift;
+use building\lift;
 
 $lift = new lift(2,4);
