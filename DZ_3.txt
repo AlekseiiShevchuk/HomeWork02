@@ -1,0 +1,70 @@
+﻿    Запрос который выведет всех пользователей в возрасте от 20 лет с количеством книг более 5
+	-----------------------------------------------------------------------------------------
+	SELECT *, COUNT(*) AS book_count FROM users_books ub JOIN users u ON ub.user_id = u.id 
+	WHERE u.age >= 20 
+	GROUP BY ub.user_id
+	HAVING book_count >5
+	ORDER BY book_count
+    -----------------------------------------------------------------------------------------
+	
+	
+	Запрос который выведет пользователей в имени которых присутствует число 3
+	--------------------------------
+	SELECT * 
+	FROM USERS
+	WHERE first_name LIKE  '%3%'
+    --------------------------------
+	
+	
+	Запрос который выведет список пользователей которые не брали книгу с именем "Book #21"
+	----------------------------------------------------------
+	SELECT *
+	FROM users
+	WHERE id NOT IN
+				   (SELECT DISTINCT user_id
+					FROM users_books
+					WHERE book_id IN(
+									 SELECT id
+									 FROM books
+									 WHERE title = 'Book #21'
+									 )
+					)
+	-----------------------------------------------------------
+									 
+    
+	Запрос который добавит поле is_active в таблицу users;
+	----------------------------------------------------------------------
+	ALTER TABLE  users ADD  is_active TINYINT NULL DEFAULT  '0' AFTER  age
+	----------------------------------------------------------------------
+	
+    
+	Запрос, который проставит is_active = 1 для пользователей, которые взяли как минимум одну книгу
+	-----------------------------------------
+	UPDATE users 
+	SET is_active = 1
+	WHERE id IN (
+				 SELECT user_id
+				 FROM users_books
+				 GROUP BY user_id
+				 HAVING COUNT( book_id ) >0
+				 )
+	------------------------------------------
+	
+	
+    Запрос который добавит поле best_seller (bool) в таблицу books
+	--------------------------------------------------------------------------
+	ALTER TABLE  books ADD  best_seller BOOLEAN NULL DEFAULT NULL AFTER  title
+	--------------------------------------------------------------------------
+	
+	
+    Запрос который выставит best_seller = 1 для книг, которые были взяты пользователями более 10 раз
+	------------------------------------------------
+	UPDATE books
+	SET best_seller=1
+	WHERE id IN(
+				SELECT book_id
+				FROM users_books
+				GROUP BY book_id
+				HAVING count(users_books.user_id)>10
+				)
+	-------------------------------------------------
